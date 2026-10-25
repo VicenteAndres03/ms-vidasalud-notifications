@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: ms-vidasalud-notifications
+  rabbitmq:
+    # Los dos nodos del cluster: si uno cae, el cliente se conecta al otro
+    addresses: ${RABBIT_ADDRESSES:localhost:5672}
+    username: ${RABBIT_USER:guest}
+    password: ${RABBIT_PASS:guest}
+    listener:
+      simple:
+        acknowledge-mode: manual
+        prefetch: 10
+        # Si el mensaje no se puede ni convertir, no se reencola: va a la DLQ
+        default-requeue-rejected: false
+
+# Nombres centralizados de exchanges, colas y routing keys
+app:
+  rabbit:
+    exchange-atenciones: vidasalud.atenciones
+    exchange-dlx: vidasalud.dlx
+    sufijo-dlq: .dlq
+    colas:
+      notificaciones: q.notificaciones
+      tickets: q.tickets
+      auditoria: q.auditoria
+    routing-keys:
+      confirmada: atencion.confirmada
+      cancelada: atencion.cancelada
+      en-espera: atencion.en_espera
+      todas: atencion.#
